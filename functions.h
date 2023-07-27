@@ -41,11 +41,17 @@
 #define SLIDING_WINDOW 2
 #define TEAR_DOWN 3
 
-/*Three way handshaking state machine*/
+/*Three way handshaking state machine server*/
 #define WAIT_SYN 1
-#define WAIT_ACKSYN 2
+#define SEND_ACKSYN 2
 #define WAIT_ACK 3
 
+/*FLAGS*/
+#define SYN 0
+#define ACKSYN 1
+#define ACK 2
+#define FIN 3
+#define DATA 4
 
 typedef struct
 {
@@ -59,5 +65,6 @@ typedef struct
 
 /*Functions*/
 void printErrorAndExit(char errMsg[]);
+const char* printFlag(int flag);
 
 #endif
