@@ -3,6 +3,10 @@
 fd_set set;
 int mainState;
 
+/**
+ * function for reading incomming messages 
+ * if return is > 0 means that the package is received correctly
+*/
 int readMessage(int fileDescriptor, socklen_t size)
 {
 	// Gives the set, zero bits for all file desctiptors
