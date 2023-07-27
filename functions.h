@@ -36,10 +36,16 @@
 #define PORT 5555
 #define MAXMSG 50
 
-#define START 0
+/*Main state machine*/
 #define THREE_WAY_HAND_SHAKING 1
 #define SLIDING_WINDOW 2
 #define TEAR_DOWN 3
+
+/*Three way handshaking state machine*/
+#define WAIT_SYN 1
+#define WAIT_ACKSYN 2
+#define WAIT_ACK 3
+
 
 typedef struct
 {
