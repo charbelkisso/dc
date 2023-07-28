@@ -12,13 +12,14 @@ int windowSize;
 int readMessage(int fileDescriptor, struct sockaddr_in *clientName, rtp *buffer)
 {
 	socklen_t size = sizeof(struct sockaddr_in);
-	return recvfrom(fileDescriptor, buffer, MAXMSG, MSG_WAITALL, (struct sockaddr *)clientName, &size);
+	return recvfrom(fileDescriptor, buffer, sizeof(rtp), 0, (struct sockaddr *)clientName, &size);
 }
 
 int sendMessage(int fileDescriptor, struct sockaddr_in *clientName, rtp *buffer)
 {
 	buffer->windowsize = windowSize;
-	return sendto(fileDescriptor, buffer, sizeof(*buffer), 0, (struct sockaddr *)clientName, sizeof(*clientName));
+	socklen_t size = sizeof(struct sockaddr_in);
+	return sendto(fileDescriptor, buffer, sizeof(rtp), 0, (struct sockaddr *)clientName, size);
 }
 int threeWayHandShaking(int fileDescriptor, struct sockaddr_in *clientName, rtp *buffer)
 {
@@ -84,7 +85,7 @@ int threeWayHandShaking(int fileDescriptor, struct sockaddr_in *clientName, rtp 
 				state = SEND_ACKSYN;
 				continue;
 			}
-			return ret; // any number > 0 
+			return ret; // any number > 0
 			break;
 		}
 	}
@@ -102,17 +103,8 @@ int makeSocket(unsigned short int port, struct sockaddr_in *clientName)
 		exit(EXIT_FAILURE);
 	}
 	memset((char *)clientName, 0, sizeof(*clientName));
-	/* Give the socket a name. */
-	/* Socket address format set to AF_INET for Internet use. */
 	clientName->sin_family = AF_INET;
-	/* Set port number. The function htons converts from host byte order to network byte order.*/
 	clientName->sin_port = htons(port);
-
-	/* Set the Internet address of the host the function is called from. */
-	/* The function htonl converts INADDR_ANY from host byte order to network byte order. */
-	/* (htonl does the same thing as htons but the former converts a long integer whereas
-	 * htons converts a short.)
-	 */
 	clientName->sin_addr.s_addr = htonl(INADDR_ANY);
 	/* Assign an address to the socket by calling bind. */
 	if (bind(sock, (struct sockaddr *)clientName, sizeof(*clientName)) < 0)
