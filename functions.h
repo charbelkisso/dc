@@ -41,10 +41,13 @@
 #define SLIDING_WINDOW 2
 #define TEAR_DOWN 3
 
-/*Three way handshaking state machine server*/
-#define WAIT_SYN 1
-#define SEND_ACKSYN 2
-#define WAIT_ACK 3
+/*Three way handshaking state machine*/
+#define SEND_SYN 1
+#define WAIT_SYN 2
+#define SEND_ACKSYN 3
+#define WAIT_ACKSYN 4
+#define SEND_ACK 5
+#define WAIT_ACK 6
 
 /*FLAGS*/
 #define SYN 0

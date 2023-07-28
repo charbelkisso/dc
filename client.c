@@ -21,9 +21,59 @@ int createSocket(struct sockaddr_in *serverName, char *hostName)
     return fd;
 }
 
+int sendMessage(int fd, struct sockaddr_in *serverName, rtp *buffer)
+{
+    buffer->windowsize = WINDOW_SIZE;
+    // TODO: implement checksum
+    buffer->crc = 0;
+    socklen_t size = sizeof(struct sockaddr_in);
+    return sendto(fd, buffer, sizeof(rtp), 0, (struct sockaddr *)serverName, size);
+}
+
+int readMessage(int fd, struct sockaddr_in *serverName, rtp *buffer)
+{
+    socklen_t size = sizeof(struct sockaddr_in);
+    return recvfrom(fd, buffer, sizeof(rtp), 0, (struct sockaddr *)serverName, &size);
+}
+
+
+
 int threeWayHandShaking(int fd, struct sockaddr_in *serverName, rtp *buffer)
 {
-    return 0;
+    int state = SEND_SYN;
+    while (1)
+    {
+        switch (state)
+        {
+        case SEND_SYN:
+            buffer->flags = SYN;
+            if (sendMessage(fd, serverName, buffer) > 0)
+            {
+                state = WAIT_ACKSYN;
+            }
+            break;
+        case WAIT_ACKSYN:
+            /**
+             * Client will wait in this state until a SYNACK
+             * is received.
+             * a time out is set to monitor time spend waiting
+             * whene time exceeding timeout state will set back to SEND_SYN
+             */
+            if (readMessage(fd, serverName, buffer) > 0)
+            {
+                // if ACKSYN is received -> send ACK
+                state = SEND_ACK;
+            }
+            break;
+        case SEND_ACK:
+            int ret;
+            if ((ret = sendMessage(fd, serverName, buffer)) > 0)
+                return ret;
+            break;
+        }
+    }
+
+    return 1;
 }
 
 int main(int argc, char const *argv[])
